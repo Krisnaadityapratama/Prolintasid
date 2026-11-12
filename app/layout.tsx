@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Sales CRM PROLINTAS",
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/img/Prolintas - Favicon.png",
+    icon: "/img/image-apps-192.png",
     apple: "/img/image-apps.png",
   },
   appleWebApp: {
