@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/auth";
 import { OPTION_GROUPS, STAGES } from "@/lib/crm";
@@ -202,6 +202,7 @@ export async function addLeadOption(formData: FormData) {
     redirect(`/admin/options?error=${encodeURIComponent(message)}`);
   }
 
+  revalidateTag("lead-options");
   revalidatePath("/admin/options");
   revalidatePath("/leads");
   revalidatePath("/leads/new");
@@ -230,6 +231,7 @@ export async function deleteLeadOption(formData: FormData) {
   }
   if (!data) redirect("/admin/options?error=Pilihan+tidak+ditemukan+atau+akses+ditolak.");
 
+  revalidateTag("lead-options");
   revalidatePath("/admin/options");
   revalidatePath("/leads/new");
   revalidatePath("/leads");

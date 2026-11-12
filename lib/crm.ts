@@ -94,6 +94,18 @@ export type Lead = {
   creator?: Pick<Profile, "id" | "full_name" | "email"> | null;
 };
 
+export type LeadSummary = Pick<
+  Lead,
+  "id" | "company" | "pic" | "phone" | "email" | "commodity" | "origin" |
+  "destination" | "estimated_value" | "stage" | "follow_up" | "notes"
+> & { creator?: Pick<Profile, "id" | "full_name" | "email"> | null };
+
+export type DashboardLead = Pick<
+  Lead,
+  "id" | "company" | "pic" | "industry" | "origin" | "destination" |
+  "estimated_value" | "stage" | "follow_up"
+> & { creator?: Pick<Profile, "id" | "full_name" | "email"> | null };
+
 export function isActive(stage: string) {
   return ["baru", "hubungi", "kualifikasi", "penawaran", "nego"].includes(stage);
 }

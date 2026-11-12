@@ -26,7 +26,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
 
   return (
     <>
-      <div className="detail-back"><Link className="text-link" href="/leads">← Kembali ke daftar leads</Link></div>
+      <div className="detail-back"><Link className="text-link" href="/leads">← Kembali ke Daftar Leads</Link></div>
       {error && <div className="alert error">{error}</div>}
       <section className="panel detail-hero">
         <div className="detail-company-mark">{lead.company.slice(0, 1).toUpperCase()}</div>

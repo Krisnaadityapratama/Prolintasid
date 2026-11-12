@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { getLeads } from "@/lib/leads";
+import { getDashboardLeads } from "@/lib/leads";
 import { formatCurrency, isActive, stageLabel } from "@/lib/crm";
+import type { DashboardLead } from "@/lib/crm";
 
 function daysUntil(value: string) {
   const date = new Date(`${value}T00:00:00`);
@@ -10,20 +11,38 @@ function daysUntil(value: string) {
 }
 
 export default async function DashboardPage() {
-  const leads = await getLeads();
-  const active = leads.filter((lead) => isActive(lead.stage));
-  const won = leads.filter((lead) => lead.stage === "won");
-  const lost = leads.filter((lead) => lead.stage === "lost");
-  const closed = won.length + lost.length;
-  const overdue = active.filter((lead) => lead.follow_up && daysUntil(lead.follow_up) < 0);
-  const dueToday = active.filter((lead) => lead.follow_up && daysUntil(lead.follow_up) === 0);
-  const pipeline = active.reduce((sum, lead) => sum + Number(lead.estimated_value || 0), 0);
-  const upcoming = active
-    .filter((lead) => lead.follow_up)
+  const leads = await getDashboardLeads();
+  const counts = new Map<string, number>();
+  const upcomingCandidates: DashboardLead[] = [];
+  let activeCount = 0;
+  let wonCount = 0;
+  let lostCount = 0;
+  let overdueCount = 0;
+  let dueTodayCount = 0;
+  let pipeline = 0;
+
+  for (const lead of leads) {
+    counts.set(lead.stage, (counts.get(lead.stage) ?? 0) + 1);
+    if (lead.stage === "won") wonCount += 1;
+    if (lead.stage === "lost") lostCount += 1;
+    if (!isActive(lead.stage)) continue;
+
+    activeCount += 1;
+    pipeline += Number(lead.estimated_value || 0);
+    if (lead.follow_up) {
+      const days = daysUntil(lead.follow_up);
+      if (days < 0) overdueCount += 1;
+      if (days === 0) dueTodayCount += 1;
+      upcomingCandidates.push(lead);
+    }
+  }
+
+  const closed = wonCount + lostCount;
+  const upcoming = upcomingCandidates
     .sort((a, b) => (a.follow_up ?? "").localeCompare(b.follow_up ?? ""))
     .slice(0, 5);
   const stageCounts = ["baru", "hubungi", "kualifikasi", "penawaran", "nego", "won", "lost"]
-    .map((stage) => ({ stage, count: leads.filter((lead) => lead.stage === stage).length }));
+    .map((stage) => ({ stage, count: counts.get(stage) ?? 0 }));
 
   return (
     <>
@@ -32,10 +51,10 @@ export default async function DashboardPage() {
         <Link className="button primary" href="/leads/new"><span>＋</span> Tambah lead</Link>
       </header>
       <section className="metric-grid">
-        <article className="metric-card"><div className="metric-label">Lead aktif <span className="metric-icon blue">↗</span></div><strong>{active.length}</strong><small>dari {leads.length} total leads</small></article>
+        <article className="metric-card"><div className="metric-label">Lead aktif <span className="metric-icon blue">↗</span></div><strong>{activeCount}</strong><small>dari {leads.length} total leads</small></article>
         <article className="metric-card"><div className="metric-label">Potensi pipeline <span className="metric-icon violet">◇</span></div><strong className="currency">{formatCurrency(pipeline)}</strong><small>nilai dari lead aktif</small></article>
-        <article className="metric-card"><div className="metric-label">Win rate <span className="metric-icon green">✓</span></div><strong>{closed ? `${Math.round(won.length / closed * 100)}%` : "—"}</strong><small>{won.length} deal · {lost.length} gagal</small></article>
-        <article className="metric-card"><div className="metric-label">Perlu follow-up <span className="metric-icon orange">◷</span></div><strong>{overdue.length + dueToday.length}</strong><small>{overdue.length} terlambat · {dueToday.length} hari ini</small></article>
+        <article className="metric-card"><div className="metric-label">Win rate <span className="metric-icon green">✓</span></div><strong>{closed ? `${Math.round(wonCount / closed * 100)}%` : "—"}</strong><small>{wonCount} deal · {lostCount} gagal</small></article>
+        <article className="metric-card"><div className="metric-label">Perlu follow-up <span className="metric-icon orange">◷</span></div><strong>{overdueCount + dueTodayCount}</strong><small>{overdueCount} terlambat · {dueTodayCount} hari ini</small></article>
       </section>
 
       <div className="dashboard-grid">

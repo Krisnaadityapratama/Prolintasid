@@ -19,7 +19,7 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
   return (
     <>
       <header className="page-header">
-        <div><div className="eyebrow">PIPELINE PENJUALAN</div><h1>Daftar leads</h1><p>Semua peluang tim, terlihat oleh seluruh pengguna.</p></div>
+        <div><div className="eyebrow">SALES PIPELINE</div><h1>Daftar Leads</h1><p>Semua peluang tim, terlihat oleh seluruh pengguna.</p></div>
         <Link className="button primary" href="/leads/new"><span>＋</span> Tambah lead</Link>
       </header>
       {params.error && <div className="alert error">{params.error}</div>}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { saveLead } from "@/app/actions";
 import type { Lead, LeadOptions } from "@/lib/crm";
 import { STAGES } from "@/lib/crm";
+import SaveLeadButton from "./SaveLeadButton";
 
 type LeadFormProps = { lead?: Lead; error?: string; options: LeadOptions };
 
@@ -56,7 +57,7 @@ export default function LeadForm({ lead, error, options: items }: LeadFormProps)
             <label className="field wide">Catatan<textarea name="notes" rows={4} defaultValue={lead?.notes ?? ""} placeholder="Hasil meeting, kebutuhan khusus, kompetitor, atau rate yang diminta..." /></label>
           </div>
         </section>
-        <div className="form-footer"><span>Lead ini akan tercatat atas nama akun Anda.</span><button className="button primary" type="submit">{lead ? "Simpan perubahan" : "Simpan lead"} <span>→</span></button></div>
+        <div className="form-footer"><span>Lead ini akan tercatat atas nama akun Anda.</span><SaveLeadButton label={lead ? "Simpan perubahan" : "Simpan lead"} /></div>
       </form>
     </>
   );

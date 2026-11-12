@@ -27,9 +27,11 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
           <div className="team-list">{users.map((user) => <div className="team-row" key={user.id}>
             <span className="user-avatar">{(user.full_name || user.email).slice(0, 1).toUpperCase()}</span>
             <span className="team-name"><strong>{user.full_name || "Nama belum diatur"}</strong><small>{user.email}</small></span>
-            <span className={`role-badge role-${user.role}`}>{roleLabel(user.role)}</span>
-            <span className={`account-state ${user.is_active ? "account-active" : "account-frozen"}`}>{user.is_active ? "Aktif" : "Dibekukan"}</span>
-            {user.role !== "owner" && <>
+            <div className="team-meta">
+              <span className={`role-badge role-${user.role}`}>{roleLabel(user.role)}</span>
+              <span className={`account-state ${user.is_active ? "account-active" : "account-frozen"}`}>{user.is_active ? "Aktif" : "Dibekukan"}</span>
+            </div>
+            {user.role !== "owner" && <div className="team-actions">
               <Link className="button secondary user-action" href={`/admin/users/${user.id}/edit`}>Ubah</Link>
               <form action={setTeamUserActive}>
                 <input type="hidden" name="id" value={user.id} />
@@ -45,7 +47,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                 description={`Akun ${user.full_name || user.email} akan dihapus permanen. Akun dengan leads yang belum dipindahkan tidak dapat dihapus.`}
                 confirmLabel="Ya, hapus akun"
               />
-            </>}
+            </div>}
           </div>)}</div>
           <div className="permission-note"><span>i</span><p>Seluruh anggota dapat melihat semua leads. Hanya pembuat lead yang dapat mengubah atau menghapusnya.</p></div>
         </section>

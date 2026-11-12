@@ -12,12 +12,11 @@ export default async function LoginPage() {
     <main className="login-page">
       <section className="login-card">
         <Link className="brand login-brand" href="/">
-          <span className="brand-mark">P</span>
-          <span>PROLINTAS<small>LEAD MANAGEMENT</small></span>
+          <img className="brand-logo" src="/img/Prolintas - Logo Biru.png" alt="PROLINTAS" />
         </Link>
         <div className="eyebrow">RUANG KERJA TIM</div>
         <h1>Selamat datang<br />kembali.</h1>
-        <p className="login-copy">Masuk untuk melihat dan mengelola pipeline leads tim Anda.</p>
+        <p className="login-copy">Masuk untuk melihat dan mengelola sales pipeline tim Anda.</p>
         <LoginForm />
         <div className="login-foot">Gunakan email dan kata sandi akun CRM yang diberikan Admin Utama.</div>
       </section>

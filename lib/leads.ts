@@ -1,9 +1,11 @@
 import { cache } from "react";
-import { OPTION_GROUPS, type Lead, type LeadOption, type LeadOptions } from "@/lib/crm";
+import { unstable_cache } from "next/cache";
+import { OPTION_GROUPS, type DashboardLead, type Lead, type LeadOption, type LeadOptions, type LeadSummary } from "@/lib/crm";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
-export const getLeadOptions = cache(async function getLeadOptions(): Promise<LeadOptions> {
-  const supabase = await createClient();
+export const getLeadOptions = unstable_cache(async function getLeadOptions(): Promise<LeadOptions> {
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("lead_options")
     .select("id,category,label,sort_order")
@@ -22,7 +24,7 @@ export const getLeadOptions = cache(async function getLeadOptions(): Promise<Lea
     if (option.category in options) options[option.category].push(option.label);
   }
   return options;
-});
+}, ["lead-options"], { revalidate: 300, tags: ["lead-options"] });
 
 export const getLeadOptionRows = cache(async function getLeadOptionRows() {
   const supabase = await createClient();
@@ -40,11 +42,28 @@ export const getLeads = cache(async function getLeads() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("leads")
-    .select("*,creator:profiles!leads_created_by_fkey(id,full_name,email)")
+    .select("id,company,pic,phone,email,commodity,origin,destination,estimated_value,stage,follow_up,notes,creator:profiles!leads_created_by_fkey(id,full_name,email)")
     .order("created_at", { ascending: false });
   if (error) throw new Error(`Gagal memuat leads: ${error.message}`);
 
-  return (data ?? []) as Lead[];
+  return (data ?? []).map((lead) => ({
+    ...lead,
+    creator: Array.isArray(lead.creator) ? lead.creator[0] ?? null : lead.creator,
+  })) as LeadSummary[];
+});
+
+export const getDashboardLeads = cache(async function getDashboardLeads() {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("leads")
+    .select("id,company,pic,industry,origin,destination,estimated_value,stage,follow_up,creator:profiles!leads_created_by_fkey(id,full_name,email)")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`Gagal memuat leads dashboard: ${error.message}`);
+
+  return (data ?? []).map((lead) => ({
+    ...lead,
+    creator: Array.isArray(lead.creator) ? lead.creator[0] ?? null : lead.creator,
+  })) as DashboardLead[];
 });
 
 export const getLead = cache(async function getLead(id: string) {
