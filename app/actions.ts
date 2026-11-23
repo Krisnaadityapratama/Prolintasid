@@ -103,7 +103,7 @@ export async function saveLead(formData: FormData) {
   if (id) {
     const { data: existing, error: existingError } = await supabase
       .from("leads")
-      .select("stage,closed_at,modes,services,industry,source,unit,incoterm,frequency,temperature,lost_reason")
+      .select("stage,closed_at,modes,services,industry,company_area,source,unit,incoterm,frequency,temperature,lost_reason")
       .eq("id", id)
       .eq("created_by", viewer.id)
       .maybeSingle();
@@ -128,6 +128,7 @@ export async function saveLead(formData: FormData) {
   ];
   const optionalOptions: [string, string | null][] = [
     ["industries", payload.industry],
+    ["company_areas", payload.company_area],
     ["sources", payload.source],
     ["units", payload.unit],
     ["incoterms", payload.incoterm],
@@ -140,6 +141,7 @@ export async function saveLead(formData: FormData) {
   });
   const fieldByCategory: Record<string, string> = {
     industries: "industry",
+    company_areas: "company_area",
     sources: "source",
     units: "unit",
     incoterms: "incoterm",

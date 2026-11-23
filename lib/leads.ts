@@ -42,7 +42,7 @@ export const getLeads = cache(async function getLeads() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("leads")
-    .select("id,company,pic,phone,email,commodity,origin,destination,estimated_value,stage,follow_up,notes,creator:profiles!leads_created_by_fkey(id,full_name,email)")
+    .select("id,company,pic,phone,email,company_area,commodity,origin,destination,estimated_value,stage,follow_up,notes,creator:profiles!leads_created_by_fkey(id,full_name,email)")
     .order("created_at", { ascending: false });
   if (error) throw new Error(`Gagal memuat leads: ${error.message}`);
 

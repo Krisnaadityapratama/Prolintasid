@@ -18,6 +18,7 @@ export const OPTION_GROUPS = [
       "Pertambangan & Energi", "Pertanian & Komoditas", "Furnitur", "Lainnya",
     ],
   },
+  { key: "company_areas", label: "Area perusahaan", items: [] },
   { key: "modes", label: "Moda angkutan", items: ["Sea FCL", "Sea LCL", "Air Freight", "Trucking", "Multimoda"] },
   {
     key: "services",
@@ -98,7 +99,7 @@ export type Lead = {
 
 export type LeadSummary = Pick<
   Lead,
-  "id" | "company" | "pic" | "phone" | "email" | "commodity" | "origin" |
+  "id" | "company" | "pic" | "phone" | "email" | "company_area" | "commodity" | "origin" |
   "destination" | "estimated_value" | "stage" | "follow_up" | "notes"
 > & { creator?: Pick<Profile, "id" | "full_name" | "email"> | null };
 

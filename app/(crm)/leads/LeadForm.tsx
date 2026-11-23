@@ -31,7 +31,7 @@ export default function LeadForm({ lead, error, options: items }: LeadFormProps)
             <label className="field">Nomor telepon / WhatsApp<input name="phone" type="tel" defaultValue={lead?.phone ?? ""} placeholder="08xx xxxx xxxx" /></label>
             <label className="field">Email<input name="email" type="email" defaultValue={lead?.email ?? ""} placeholder="nama@perusahaan.com" /></label>
             <label className="field">Alamat perusahaan<input name="company_address" defaultValue={lead?.company_address ?? ""} placeholder="Alamat perusahaan" /></label>
-            <label className="field">Area perusahaan<input name="company_area" defaultValue={lead?.company_area ?? ""} placeholder="Contoh: Jakarta Selatan" /></label>
+            <label className="field">Area perusahaan<select name="company_area" defaultValue={lead?.company_area ?? ""}><option value="">Pilih area perusahaan</option>{lead?.company_area && !items.company_areas.includes(lead.company_area) && <option value={lead.company_area}>{lead.company_area}</option>}{options(items.company_areas)}</select></label>
             <label className="field wide">Industri<select name="industry" defaultValue={lead?.industry ?? ""}><option value="">Pilih industri</option>{options(items.industries)}</select></label>
           </div>
         </section>
