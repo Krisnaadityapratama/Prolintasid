@@ -2,13 +2,33 @@
 
 import { useState } from "react";
 import { strToU8, zipSync } from "fflate";
-import type { LeadSummary } from "@/lib/crm";
-import { formatCurrency, stageLabel } from "@/lib/crm";
+import type { Lead } from "@/lib/crm";
+import { stageLabel } from "@/lib/crm";
 
-type LeadExportButtonsProps = { leads: LeadSummary[] };
+type LeadExportButtonsProps = { filters: { q: string; stage: string; area: string } };
 type ExportValue = string | number;
 
-const headers = ["Perusahaan / rute", "Area", "Kontak", "Tahap", "Follow-up", "Pembuat", "Nilai estimasi"];
+const headers = [
+  "ID lead", "Nama perusahaan", "PIC", "Jabatan", "Telepon", "Email", "Alamat perusahaan", "Area perusahaan",
+  "Industri", "Komoditas", "Moda angkutan", "Layanan", "Asal", "Tujuan", "Volume", "Satuan volume",
+  "Incoterm", "Frekuensi", "Nilai estimasi", "Sumber lead", "Tahap", "Prospek", "Follow-up", "Catatan",
+  "Alasan lead gagal", "Ditutup pada", "ID user pembuat", "ID profil pembuat", "Nama pembuat", "Email pembuat",
+  "Dibuat pada", "Diperbarui pada",
+];
+
+async function loadExportLeads(filters: LeadExportButtonsProps["filters"]) {
+  const search = new URLSearchParams(filters);
+  const response = await fetch(`/api/leads/export?${search.toString()}`, { cache: "no-store" });
+  const result: unknown = await response.json();
+  if (!response.ok) {
+    const message = typeof result === "object" && result !== null && "error" in result && typeof result.error === "string"
+      ? result.error
+      : "Gagal memuat data untuk ekspor.";
+    throw new Error(message);
+  }
+  if (!Array.isArray(result)) throw new Error("Respons data ekspor tidak valid.");
+  return result as Lead[];
+}
 
 function formatFollowUp(value: string | null) {
   return value
@@ -16,20 +36,44 @@ function formatFollowUp(value: string | null) {
     : "—";
 }
 
-function getExportRows(leads: LeadSummary[]): ExportValue[][] {
-  return leads.map((lead) => {
-    const route = [lead.origin, lead.destination].filter(Boolean).join(" - ") || "—";
-    const contactDetails = lead.phone || lead.email || "Kontak belum diisi";
-    return [
-      `${lead.company} (${route})`,
-      lead.company_area || "—",
-      `${lead.pic || "—"} (${contactDetails})`,
-      stageLabel(lead.stage),
-      formatFollowUp(lead.follow_up),
-      lead.creator?.full_name || lead.creator?.email || "—",
-      lead.estimated_value,
-    ];
-  });
+function getExportRows(leads: Lead[]): ExportValue[][] {
+  const text = (value: string | null) => value || "—";
+  const list = (values: string[]) => values.length ? values.join(", ") : "—";
+
+  return leads.map((lead) => [
+    lead.id,
+    lead.company,
+    text(lead.pic),
+    text(lead.job_title),
+    text(lead.phone),
+    text(lead.email),
+    text(lead.company_address),
+    text(lead.company_area),
+    text(lead.industry),
+    text(lead.commodity),
+    list(lead.modes),
+    list(lead.services),
+    text(lead.origin),
+    text(lead.destination),
+    lead.volume ?? "—",
+    text(lead.unit),
+    text(lead.incoterm),
+    text(lead.frequency),
+    lead.estimated_value,
+    text(lead.source),
+    stageLabel(lead.stage),
+    text(lead.temperature),
+    formatFollowUp(lead.follow_up),
+    text(lead.notes),
+    text(lead.lost_reason),
+    text(lead.closed_at),
+    lead.created_by,
+    text(lead.creator?.id ?? null),
+    text(lead.creator?.full_name ?? null),
+    text(lead.creator?.email ?? null),
+    lead.created_at,
+    lead.updated_at,
+  ]);
 }
 
 function downloadFile(content: BlobPart, type: string, extension: string) {
@@ -100,26 +144,7 @@ function exportExcel(rows: ExportValue[][]) {
   downloadFile(buffer, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx");
 }
 
-async function exportPdf(rows: ExportValue[][]) {
-  const [{ jsPDF }, { default: autoTable }] = await Promise.all([
-    import("jspdf"),
-    import("jspdf-autotable"),
-  ]);
-  const document = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-  document.setFontSize(14);
-  document.text("Daftar Leads", 12, 14);
-  autoTable(document, {
-    head: [headers],
-    body: rows.map((row) => row.map((value, index) => index === 6 ? formatCurrency(value) : String(value))),
-    startY: 19,
-    margin: { left: 12, right: 12 },
-    styles: { fontSize: 7, cellPadding: 2, overflow: "linebreak" },
-    headStyles: { fillColor: [39, 101, 153] },
-  });
-  document.save(`daftar-leads-${new Date().toISOString().slice(0, 10)}.pdf`);
-}
-
-export default function LeadExportButtons({ leads }: LeadExportButtonsProps) {
+export default function LeadExportButtons({ filters }: LeadExportButtonsProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -135,13 +160,11 @@ export default function LeadExportButtons({ leads }: LeadExportButtonsProps) {
     }
   }
 
-  const rows = getExportRows(leads);
   return (
     <div className="export-controls">
       <div className="export-buttons" aria-label="Ekspor daftar leads">
-        <button className="button secondary" type="button" disabled={busy || !leads.length} onClick={() => void runExport(() => exportPdf(rows))}>PDF</button>
-        <button className="button secondary" type="button" disabled={busy || !leads.length} onClick={() => void runExport(() => exportCsv(rows))}>CSV</button>
-        <button className="button secondary" type="button" disabled={busy || !leads.length} onClick={() => void runExport(() => exportExcel(rows))}>Excel</button>
+        <button className="button secondary" type="button" disabled={busy} onClick={() => void runExport(async () => exportCsv(getExportRows(await loadExportLeads(filters))))}>CSV</button>
+        <button className="button secondary" type="button" disabled={busy} onClick={() => void runExport(async () => exportExcel(getExportRows(await loadExportLeads(filters))))}>Excel</button>
       </div>
       {error && <span className="export-error" role="alert">{error}</span>}
     </div>

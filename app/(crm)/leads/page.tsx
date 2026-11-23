@@ -42,7 +42,7 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
         </form>
         <div className="list-toolbar">
           <div className="list-count"><strong>{filtered.length}</strong> lead ditampilkan <span>·</span> {leads.length} total</div>
-          <LeadExportButtons leads={filtered} />
+          <LeadExportButtons filters={{ q: query, stage: selectedStage, area: selectedArea }} />
         </div>
         {filtered.length ? <div className="table-wrap"><table className="leads-table"><thead><tr><th>Perusahaan / rute</th><th>Area</th><th>Kontak</th><th>Tahap</th><th>Follow-up</th><th>Pembuat</th><th>Nilai estimasi</th></tr></thead><tbody>
           {filtered.map((lead) => <tr key={lead.id}>
