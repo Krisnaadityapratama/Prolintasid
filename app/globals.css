@@ -164,9 +164,14 @@ td { border-top: 1px solid #edf0f3; padding: 11px 12px; color: #526579; font-siz
 .search-field input { width: 100%; border: 0; outline: 0; color: var(--ink); font-size: 11px; }
 .search-field input::placeholder { color: #a0acb7; }
 .filter-bar select { min-width: 145px; height: 38px; border: 1px solid #e2e8ee; border-radius: 5px; background: #fff; padding: 0 10px; color: #53677a; font-size: 11px; }
+.list-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .list-count { padding: 13px 0 5px; color: #8392a0; font-size: 10px; }
 .list-count strong { color: #42586c; }
 .list-count span { margin: 0 5px; color: #c1cbd4; }
+.export-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.export-buttons { display: flex; gap: 6px; }
+.export-buttons .button { min-height: 31px; padding: 0 10px; font-size: 10px; }
+.export-error { color: var(--red); font-size: 10px; }
 .leads-table { min-width: 790px; }
 .leads-table th:first-child, .leads-table td:first-child { padding-left: 3px; }
 .leads-table th:last-child, .leads-table td:last-child { padding-right: 3px; }
@@ -352,6 +357,8 @@ td { border-top: 1px solid #edf0f3; padding: 11px 12px; color: #526579; font-siz
   .filter-bar { flex-wrap: wrap; }
   .search-field { min-width: 100%; }
   .filter-bar select { flex: 1; }
+  .list-toolbar { align-items: flex-start; flex-direction: column; gap: 6px; padding-bottom: 8px; }
+  .export-controls { width: 100%; align-items: flex-start; }
   .form-section { padding: 17px 15px; }
   .form-fields { gap: 13px 10px; }
   .field { font-size: 9px; }

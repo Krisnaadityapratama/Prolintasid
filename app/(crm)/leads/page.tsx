@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getLeadOptions, getLeads } from "@/lib/leads";
 import { formatCurrency, isActive, STAGES, stageLabel } from "@/lib/crm";
+import LeadExportButtons from "./LeadExportButtons";
 
 type LeadsPageProps = { searchParams: Promise<{ q?: string; stage?: string; area?: string; notice?: string; error?: string }> };
 
@@ -39,7 +40,10 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
           </select>
           <button className="button secondary" type="submit">Terapkan</button>
         </form>
-        <div className="list-count"><strong>{filtered.length}</strong> lead ditampilkan <span>·</span> {leads.length} total</div>
+        <div className="list-toolbar">
+          <div className="list-count"><strong>{filtered.length}</strong> lead ditampilkan <span>·</span> {leads.length} total</div>
+          <LeadExportButtons leads={filtered} />
+        </div>
         {filtered.length ? <div className="table-wrap"><table className="leads-table"><thead><tr><th>Perusahaan / rute</th><th>Area</th><th>Kontak</th><th>Tahap</th><th>Follow-up</th><th>Pembuat</th><th>Nilai estimasi</th></tr></thead><tbody>
           {filtered.map((lead) => <tr key={lead.id}>
             <td><Link className="company-cell" href={`/leads/${lead.id}`}>{lead.company}<small>{lead.origin || "—"} {lead.origin && lead.destination ? "→" : ""} {lead.destination || ""}</small></Link></td>
