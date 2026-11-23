@@ -70,6 +70,8 @@ export type Lead = {
   job_title: string | null;
   phone: string | null;
   email: string | null;
+  company_address: string | null;
+  company_area: string | null;
   industry: string | null;
   commodity: string | null;
   modes: string[];

@@ -14,7 +14,8 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
   if (!lead) notFound();
   const canEdit = lead.created_by === viewer.id;
   const details = [
-    ["PIC", lead.pic], ["Jabatan", lead.job_title], ["Telepon", lead.phone], ["Email", lead.email],
+    ["PIC", lead.pic], ["Jabatan", lead.job_title], ["Telepon", lead.phone],
+    ["Alamat perusahaan", lead.company_address], ["Email", lead.email], ["Area perusahaan", lead.company_area],
     ["Industri", lead.industry], ["Komoditas", lead.commodity], ["Moda", lead.modes.join(", ")],
     ["Layanan", lead.services.join(", ")], ["Asal", lead.origin], ["Tujuan", lead.destination],
     ["Volume", lead.volume ? `${lead.volume} ${lead.unit ?? ""}` : null], ["Incoterm", lead.incoterm],

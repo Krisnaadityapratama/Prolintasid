@@ -72,6 +72,8 @@ export async function saveLead(formData: FormData) {
     job_title: text(formData, "job_title") || null,
     phone: text(formData, "phone") || null,
     email: text(formData, "email") || null,
+    company_address: text(formData, "company_address") || null,
+    company_area: text(formData, "company_area") || null,
     industry: text(formData, "industry") || null,
     commodity: text(formData, "commodity") || null,
     modes: formData.getAll("modes").filter((value): value is string => typeof value === "string"),

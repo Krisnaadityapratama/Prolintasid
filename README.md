@@ -11,7 +11,8 @@ Aplikasi CRM leads berbasis Next.js dan Supabase. Seluruh anggota yang masuk dap
 5. Setelah profil Admin Utama tersedia, jalankan SQL pada `supabase/migrations/202611110002_lead_options.sql` melalui Supabase SQL Editor. SQL ini membuat tabel pilihan, kebijakan akses, dan mengisi pilihan default. Untuk project yang sudah berjalan, cukup jalankan file migration kedua ini satu kali.
 6. Untuk mengaktifkan tombol hapus pada menu **Pilihan Form**, jalankan `supabase/migrations/202611110003_delete_lead_options.sql` melalui Supabase SQL Editor.
 7. Untuk mengaktifkan pembekuan akun dan pembatasan akses data bagi akun beku, jalankan `supabase/migrations/202611110004_freeze_users.sql` melalui Supabase SQL Editor.
-8. Jalankan `npm install`, kemudian `npm run dev`.
+8. Untuk menambahkan alamat dan area perusahaan pada lead, jalankan `supabase/migrations/202611230001_lead_company_address_area.sql` melalui Supabase SQL Editor.
+9. Jalankan `npm install`, kemudian `npm run dev`.
 
 Jangan gunakan service role key pada kode browser atau variabel yang diawali `NEXT_PUBLIC_`. Admin Utama membuat akun tim dari menu **Pengguna** menggunakan nama, email, role, dan kata sandi awal. Akun langsung aktif; bagikan kata sandi kepada anggota dengan aman dan minta mereka menggantinya setelah login.
 
